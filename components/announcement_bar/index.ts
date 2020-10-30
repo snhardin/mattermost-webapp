@@ -2,7 +2,7 @@
 // See LICENSE.txt for license information.
 
 import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import {bindActionCreators, Dispatch} from 'redux';
 import {Permissions} from 'mattermost-redux/constants';
 import {getCurrentUser} from 'mattermost-redux/selectors/entities/users';
 import {haveISystemPermission} from 'mattermost-redux/selectors/entities/roles';
@@ -13,9 +13,11 @@ import {getStandardAnalytics} from 'mattermost-redux/actions/admin';
 
 import {dismissNotice} from 'actions/views/notice';
 
-import AnnouncementBarController from './announcement_bar_controller.jsx';
+import AnnouncementBarController from './announcement_bar_controller';
+import { GlobalState } from 'mattermost-redux/types/store';
+import { GenericAction } from 'mattermost-redux/types/actions';
 
-function mapStateToProps(state) {
+function mapStateToProps(state: GlobalState) {
     const canViewSystemErrors = haveISystemPermission(state, {permission: Permissions.MANAGE_SYSTEM});
     const license = getLicense(state);
     const config = getConfig(state);
@@ -23,7 +25,7 @@ function mapStateToProps(state) {
     const errors = getDisplayableErrors(state);
     const warnMetricsStatus = getWarnMetricsStatus(state);
 
-    const totalUsers = state.entities.admin.analytics.TOTAL_USERS;
+    const totalUsers = state.entities.admin.analytics?.TOTAL_USERS;
     let latestError = null;
     if (errors && errors.length >= 1) {
         latestError = errors[0];
@@ -40,7 +42,7 @@ function mapStateToProps(state) {
     };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch: Dispatch<GenericAction>) {
     const dismissFirstError = dismissError.bind(null, 0);
     return {
         actions: bindActionCreators({

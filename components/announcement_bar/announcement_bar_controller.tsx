@@ -2,36 +2,37 @@
 // See LICENSE.txt for license information.
 
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import ConfigurationAnnouncementBar from './configuration_bar';
 import VersionBar from './version_bar';
-import TextDismissableBar from './text_dismissable_bar.jsx';
+import TextDismissableBar from './text_dismissable_bar';
 import AnnouncementBar from './default_announcement_bar';
 
 import CloudAnnouncementBar from './cloud_announcement_bar';
 import PaymentAnnouncementBar from './payment_announcement_bar';
+import { ClientConfig } from 'mattermost-redux/types/config';
+import { AnalyticsRow } from 'mattermost-redux/src/types/admin';
 
-export default class AnnouncementBarController extends React.PureComponent {
-    static propTypes = {
-        license: PropTypes.object,
-        config: PropTypes.object,
-        user: PropTypes.shape({
-            email: PropTypes.string.isRequired,
-            email_verified: PropTypes.bool,
-        }),
-        canViewSystemErrors: PropTypes.bool.isRequired,
-        latestError: PropTypes.object,
-        totalUsers: PropTypes.number,
-        warnMetricsStatus: PropTypes.object,
-        actions: PropTypes.shape({
-            dismissError: PropTypes.func.isRequired,
-        }).isRequired,
-    }
+type Props = {
+    license: any,
+    config?: Partial<ClientConfig>,
+    user?: {
+        email: string,
+        email_verified?: boolean,
+    },
+    canViewSystemErrors: boolean,
+    latestError?: { [key: string]: any },
+    totalUsers?: number | AnalyticsRow[],
+    warnMetricsStatus: any,
+    actions: {
+        dismissError: () => void,
+    },
+}
 
-    render() {
+export default class AnnouncementBarController extends React.PureComponent<Props> {
+    public render() {
         let adminConfiguredAnnouncementBar = null;
-        if (this.props.config.EnableBanner === 'true' && this.props.config.BannerText.trim()) {
+        if (this.props.config?.EnableBanner === 'true' && this.props.config?.BannerText?.trim()) {
             adminConfiguredAnnouncementBar = (
                 <TextDismissableBar
                     color={this.props.config.BannerColor}
